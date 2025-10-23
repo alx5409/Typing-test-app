@@ -12,6 +12,7 @@ Typing-test-app/
 │       └── test.go
 │   └── handlers/
 │   └── utils/
+|       └── helpers.go
 │   └── config/
 ├── go.mod
 ├── go.sum
