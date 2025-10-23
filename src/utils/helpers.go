@@ -1,5 +1,12 @@
 package utils
 
+// TODO:
+// - Implement a function to count erros at typing
+// - Implement a function to normalize text (remove extra spaces, lowercase, etc.).
+// - Implement support for generating sentences or paragraphs instead of single words.
+// - Implement caching or offline fallback if the API is unavailable.
+// - Implement language selection for random words (if API supports).
+
 import (
 	"encoding/json"
 	"io"
