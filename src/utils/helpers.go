@@ -42,3 +42,33 @@ func GenerateRandomText() string {
 	}
 	return text
 }
+
+// Counts the number of errors between expected and typed text
+func CountErrors(expected, typed string) int {
+	// TODO: implement error counting logic
+	return 0
+}
+
+// Normalizes the input text (e.g., removes extra spaces, converts to lowercase)
+func NormalizeText(text string) string {
+	// TODO: implement normalization logic
+	return text
+}
+
+// Generates a random sentence or paragraph for the typing test
+func GenerateRandomSentence() string {
+	// TODO: implement sentence generation logic
+	return ""
+}
+
+// Gets random words in a specified language (if API supports)
+func GetRandomTextWithLanguage(language string) string {
+	// TODO: implement language support logic
+	return ""
+}
+
+// Returns cached random text or fetches new text if cache is empty
+func GetCachedRandomText() string {
+	// TODO: implement caching logic
+	return ""
+}
