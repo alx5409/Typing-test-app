@@ -7,9 +7,12 @@ import (
 	"time"
 )
 
-// Dummy function to keep imports
-func InitTypingTest() {
-	fmt.Println("Typing test initialized at", time.Now())
-	_ = models.TypeTest{}
-	_ = utils.GenerateRandomText()
+func StartTest() *models.TypeTest {
+	test := &models.TypeTest{
+		TextToType: utils.GenerateRandomText(),
+		StartTime:  time.Now(),
+	}
+	fmt.Println("Typing test started. Type the following text:")
+	fmt.Println(test.TextToType)
+	return test
 }
