@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// StartTest initializes a new typing test, generates the text, and sets the start time.
 func StartTest() *models.TypeTest {
 	test := &models.TypeTest{
 		TextToType: utils.GenerateRandomText(),
