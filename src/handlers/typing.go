@@ -16,3 +16,11 @@ func StartTest() *models.TypeTest {
 	fmt.Println(test.TextToType)
 	return test
 }
+
+// EndTest finalizes the typing test, sets the end time, and processes the results.
+func EndTest(test *models.TypeTest, typedText string) {
+	test.TextTyped = typedText
+	test.EndTime = time.Now()
+	test.NumberErrors = utils.CountErrors(test.TextToType, test.TextTyped)
+	test.TypingSpeed = test.ComputeTypingSpeedWPM()
+}
