@@ -25,3 +25,12 @@ func EndTest(test *models.TypeTest, typedText string) {
 	test.NumberErrors = utils.CountErrors(test.TextToType, test.TextTyped)
 	test.TypingSpeed = test.ComputeTypingSpeedWPM()
 }
+
+// ShowResults displays the results of the typing test.
+func ShowResults(test *models.TypeTest) {
+    fmt.Printf("Accuracy: %.2f%%\n", test.ComputeAccuracy()*100)
+    fmt.Printf("Keystrokes per minute (PPM): %.2f\n", test.ComputeTypingSpeedPPM())
+    fmt.Printf("Words per minute (WPM): %.2f\n", test.ComputeTypingSpeedWPM())
+    fmt.Printf("Errors: %d\n", test.NumberErrors)
+    fmt.Printf("Test duration: %.2f seconds\n", test.ComputeTestTime())
+}
