@@ -20,7 +20,3 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
-
-# Ejercicios de go
-ejercicios.go
-Ejercicios.go
