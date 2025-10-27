@@ -83,10 +83,17 @@ func CountErrors(expected, typed string) int {
 	return errors
 }
 
-// Normalizes the input text (e.g., removes extra spaces, converts to lowercase)
+// Normalizes the input text (e.g., removes special characters, converts to lowercase)
 func NormalizeText(text string) string {
-	// TODO: implement normalization logic
-	return text
+	text = strings.ToLower(text)
+	var builder strings.Builder
+	for _, r := range text {
+		// Removes any character that is not lowercase ASCII letter(a - z) or number (0 - 9)
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			builder.WriteRune(r)
+		}
+	}
+	return builder.String()
 }
 
 // Generates a random sentence or paragraph for the typing test
