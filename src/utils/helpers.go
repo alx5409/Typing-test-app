@@ -46,7 +46,28 @@ func GenerateRandomText() string {
 
 // Counts the number of errors between expected and typed text
 func CountErrors(expected, typed string) int {
-	// TODO: implement error counting logic
+	expectedRunes := []rune(expected)
+	typedRunes := []rune(typed)
+	errors := 0
+	// Determine the maximum length to compare both strings fully
+	maxLen := max(len(expectedRunes), len(typedRunes))
+
+	// Compare each rune in both strings
+	for i := 0; i < maxLen; i++ {
+		var e, t rune
+		// Get the rune from expected if it is within bounds
+		if i < len(expectedRunes) {
+			e = expectedRunes[i]
+		}
+		// Get the rune from typed if it is within bounds
+		if i < len(typedRunes) {
+			t = expectedRunes[i]
+		}
+		// If one string is shorter or runes differ, count as error
+		if i >= len(expectedRunes) || i >= len(typedRunes) || e != t {
+			errors++
+		}
+	}
 	return 0
 }
 
