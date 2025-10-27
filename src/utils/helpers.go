@@ -8,6 +8,7 @@ package utils
 // - Implement language selection for random words (if API supports).
 
 import (
+	config "Typing-test-app/src/config"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -15,11 +16,17 @@ import (
 	"time"
 )
 
-const API_URL = "https://random-word-api.herokuapp.com/word"
+// Returns the maximum value
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
 
 // Generates random text for the typing test
 func GenerateRandomText() string {
-	resp, err := http.Get(API_URL)
+	resp, err := http.Get(config.AppConfig.ApiURL)
 	if err != nil {
 		return ""
 	}
@@ -73,7 +80,7 @@ func CountErrors(expected, typed string) int {
 			errors++
 		}
 	}
-	return 0
+	return errors
 }
 
 // Normalizes the input text (e.g., removes extra spaces, converts to lowercase)
@@ -84,7 +91,7 @@ func NormalizeText(text string) string {
 
 // Generates a random sentence or paragraph for the typing test
 func GenerateRandomSentence() string {
-	const numWords = 3 //
+	numWords := config.AppConfig.NumWordsInSentence
 	words := []string{}
 	for len(words) < numWords {
 		word := GenerateRandomText()
