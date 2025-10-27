@@ -14,6 +14,7 @@ Typing-test-app/
 │   └── utils/
 |       └── helpers.go
 │   └── config/
+│       └── config.go
 ├── go.mod
 ├── go.sum
 └── README.md
