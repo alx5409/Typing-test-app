@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -34,10 +35,14 @@ func GenerateRandomText() string {
 	}
 
 	// Joins the words into a single string separated by spaces
+	// skipping any word that cointais spaces
 	text := ""
-	for i, word := range words {
-		if i > 0 {
-			text += " "
+	for _, word := range words {
+		if strings.Contains(word, " ") {
+			continue // skip words with spaces
+		}
+		if text != "" {
+			text += " " // Joins the words with spaces
 		}
 		text += word
 	}
@@ -95,7 +100,18 @@ func GetCachedRandomText() string {
 	return ""
 }
 
+// Computes words per minuto given the sentence and elapsed time.
+// Words are cunted as sequences separated by spaces
 func CalculateWPM(sentence string, elapsed time.Duration) float64 {
-	//	 TODO: implement compute logic
-	return 0
+	sentence = strings.TrimSpace(sentence)
+	if sentence == "" {
+		return 0 // No words to count if the sentence is empty
+	}
+	words := strings.Fields(sentence) // separates the sentence by spaces in different strings
+	wordCount := len(words)           // counts how many strings there are
+	minutes := elapsed.Minutes()
+	if minutes == 0 {
+		return 0
+	}
+	return float64(wordCount) / minutes
 }
