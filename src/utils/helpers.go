@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 )
 
 const API_URL = "https://random-word-api.herokuapp.com/word"
@@ -71,4 +72,9 @@ func GetRandomTextWithLanguage(language string) string {
 func GetCachedRandomText() string {
 	// TODO: implement caching logic
 	return ""
+}
+
+func CalculateWPM(sentence string, elapsed time.Duration) float64 {
+	//	 TODO: implement compute logic
+	return 0
 }
