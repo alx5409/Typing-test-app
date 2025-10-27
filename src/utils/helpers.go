@@ -66,7 +66,7 @@ func CountErrors(expected, typed string) int {
 		}
 		// Get the rune from typed if it is within bounds
 		if i < len(typedRunes) {
-			t = expectedRunes[i]
+			t = typedRunes[i]
 		}
 		// If one string is shorter or runes differ, count as error
 		if i >= len(expectedRunes) || i >= len(typedRunes) || e != t {
@@ -84,8 +84,18 @@ func NormalizeText(text string) string {
 
 // Generates a random sentence or paragraph for the typing test
 func GenerateRandomSentence() string {
-	// TODO: implement sentence generation logic
-	return ""
+	const numWords = 3 //
+	words := []string{}
+	for len(words) < numWords {
+		word := GenerateRandomText()
+		word = strings.TrimSpace(word)
+		// Skip empty words
+		if word == "" {
+			continue
+		}
+		words = append(words, word)
+	}
+	return strings.Join(words, " ")
 }
 
 // Gets random words in a specified language (if API supports)

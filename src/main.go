@@ -7,7 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"Typing-test-app/src/utils"
+	typing "Typing-test-app/src/handlers"
+	models "Typing-test-app/src/models"
+	utils "Typing-test-app/src/utils"
 )
 
 func main() {
@@ -27,13 +29,16 @@ func main() {
 	userInput = strings.TrimSpace(userInput)
 	elapsed := time.Since(start)
 
-	// Calculate results
-	errors := utils.CountErrors(sentence, userInput)
-	wpm := utils.CalculateWPM(sentence, elapsed)
+	// Prepare the test struct
+	test := &models.TypeTest{
+		TextToType:   sentence,
+		TextTyped:    userInput,
+		StartTime:    start,
+		EndTime:      start.Add(elapsed),
+		NumberErrors: utils.CountErrors(sentence, userInput),
+	}
+	test.TypingSpeed = test.ComputeTypingSpeedWPM()
 
-	// Print the results
-	fmt.Printf("\nResults:\n")
-	fmt.Printf("Time: %.2f seconds\n", elapsed.Seconds())
-	fmt.Printf("Errors: %d\n", errors)
-	fmt.Printf("Speed: %.2f WPM\n", wpm)
+	// Print the results using the typing package
+	typing.ShowResults(test)
 }
