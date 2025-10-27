@@ -113,9 +113,43 @@ func GenerateRandomSentence() string {
 }
 
 // Gets random words in a specified language (if API supports)
+// Appends the language code as a query parameter (?lang=xx) to the API URL.
 func GetRandomTextWithLanguage(language string) string {
-	// TODO: implement language support logic
-	return ""
+	apiURL := config.AppConfig.ApiURL
+	if language != "" {
+		sep := "?"
+		if strings.Contains(apiURL, "?") {
+			sep = "&"
+		}
+		apiURL = apiURL + sep + "lang=" + language
+	}
+
+	resp, err := http.Get(apiURL)
+	if err != nil {
+		return ""
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
+	var words []string
+	if err := json.Unmarshal(body, &words); err != nil {
+		return ""
+	}
+
+	text := ""
+	for _, word := range words {
+		if strings.Contains(word, " ") {
+			continue // skip words with spaces
+		}
+		if text != "" {
+			text += " "
+		}
+		text += word
+	}
+	return text
 }
 
 // Returns cached random text or fetches new text if cache is empty
