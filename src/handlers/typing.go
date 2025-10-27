@@ -1,8 +1,8 @@
 package typing
 
 import (
-	"Typing-test-app/src/models"
-	"Typing-test-app/src/utils"
+	models "Typing-test-app/src/models"
+	utils "Typing-test-app/src/utils"
 	"fmt"
 	"time"
 )
