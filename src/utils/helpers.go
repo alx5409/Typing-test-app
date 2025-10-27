@@ -1,11 +1,12 @@
-package utils
+// Package utils provides utility functions for the Typing-test-app.
+// It includes helpers for generating random text, counting typing errors,
+// normalizing text, generating sentences, handling language options,
+// caching random text, and calculating words per minute (WPM).
+//
+// Functions in this package are used throughout the application to support
+// the core typing test logic and ensure consistent text processing.
 
-// TODO:
-// - Implement a function to count erros at typing
-// - Implement a function to normalize text (remove extra spaces, lowercase, etc.).
-// - Implement support for generating sentences or paragraphs instead of single words.
-// - Implement caching or offline fallback if the API is unavailable.
-// - Implement language selection for random words (if API supports).
+package utils
 
 import (
 	config "Typing-test-app/src/config"
@@ -152,10 +153,16 @@ func GetRandomTextWithLanguage(language string) string {
 	return text
 }
 
-// Returns cached random text or fetches new text if cache is empty
+// Returns cached random text or fetches new text if cache is empty.
+// This simple implementation uses a package-level variable as cache.
+var cachedText string
+
 func GetCachedRandomText() string {
-	// TODO: implement caching logic
-	return ""
+	if cachedText != "" {
+		return cachedText
+	}
+	cachedText = GenerateRandomText()
+	return cachedText
 }
 
 // Computes words per minuto given the sentence and elapsed time.
