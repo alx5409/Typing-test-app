@@ -10,6 +10,8 @@
 .snapshots/
 #Testing Output folder
 .output/
+#Executable files
+*.exe
 #Extension App-file
 *.app
 #Rapid Application Development File
