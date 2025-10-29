@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // TypeTest represents a typing test performed by the user
 type TypeTest struct {
@@ -44,11 +47,9 @@ func (t *TypeTest) ComputeTypingSpeedWPM() float32 {
 	if duration == 0 {
 		return 0
 	}
-	wordCount := 1
-	for _, c := range t.TextTyped {
-		if c == ' ' {
-			wordCount++
-		}
+	wordCount := len(strings.Fields(t.TextTyped))
+	if wordCount == 0 {
+		return 0
 	}
 	return (float32(wordCount) / duration) * 60
 }
