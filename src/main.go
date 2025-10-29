@@ -12,15 +12,23 @@ import (
 	utils "Typing-test-app/src/utils"
 )
 
+func FetchSentenceAsync() string {
+	// Generate or fetch a random sentence
+	sentenceCh := make(chan string)
+	go func() {
+		sentenceCh <- utils.GenerateRandomSentence()
+	}()
+	fmt.Println("Fetching sentence, please wait...")
+	return <-sentenceCh
+}
+
 func main() {
 	fmt.Println("Welcome to the Typing test App")
+	sentence := FetchSentenceAsync()
 	fmt.Println("Type the following sentence as fast and accurately as you can")
-
-	// Generate or fetch a random sentence
-	sentence := utils.GenerateRandomSentence()
 	fmt.Println("\n>>>", sentence)
-	fmt.Println("\nPress enter when you are ready to start")
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	// fmt.Println("\nPress enter when you are ready to start")
+	// bufio.NewReader(os.Stdin).ReadBytes('\n')
 
 	start := time.Now()
 	fmt.Print("Your input: ")

@@ -11,6 +11,7 @@ package utils
 import (
 	config "Typing-test-app/src/config"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -100,17 +101,32 @@ func NormalizeText(text string) string {
 // Generates a random sentence or paragraph for the typing test
 func GenerateRandomSentence() string {
 	numWords := config.AppConfig.NumWordsInSentence
-	words := []string{}
-	for len(words) < numWords {
-		word := GenerateRandomText()
+	// words := []string{}
+	resp, err := http.Get(config.AppConfig.ApiURL + "?words=" + fmt.Sprintf("%d", numWords))
+
+	if err != nil {
+		return ""
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
+	var words []string
+	if err := json.Unmarshal(body, &words); err != nil {
+		return ""
+	}
+	// Filter out words with spaces (just in case)
+	validWords := []string{}
+	for _, word := range words {
 		word = strings.TrimSpace(word)
-		// Skip empty words
-		if word == "" {
+		if word == "" || strings.Contains(word, " ") {
 			continue
 		}
-		words = append(words, word)
+		validWords = append(validWords, word)
 	}
-	return strings.Join(words, " ")
+	return strings.Join(validWords, " ")
 }
 
 // Gets random words in a specified language (if API supports)
