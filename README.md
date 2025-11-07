@@ -11,25 +11,6 @@ Typing-test-app is a command-line application written in Go for measuring your t
 - Displays a summary of your results after each test.
 - Modular code structure for easy extension and maintenance.
 
-## Project Structure
-
-```
-Typing-test-app/
-├── src/
-│   ├── main.go                # Entry point and main flow of the app
-│   └── models/
-│       └── test.go            # Data model and methods for typing test results
-│   └── handlers/
-│       └── typing.go          # Handlers for test flow and user interaction
-│   └── utils/
-│       └── helpers.go         # Utility functions (API calls, error counting, etc.)
-│   └── config/
-│       └── config.go          # Configuration management
-├── go.mod                     # Go module definition
-├── go.sum                     # Dependency checksums
-└── README.md                  # Project documentation
-```
-
 ## How to Run
 
 1. Open a terminal and navigate to the `src` directory:
