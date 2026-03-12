@@ -1,7 +1,6 @@
 package models
 
 import (
-	"strings"
 	"time"
 )
 
@@ -17,10 +16,14 @@ type TypeTest struct {
 }
 
 func (t *TypeTest) ComputeAccuracy() float32 {
-	if len(t.TextTyped) == 0 {
+	if len(t.TextToType) == 0 {
 		return 0
 	}
-	return 1 - float32(t.NumberErrors)/float32(len(t.TextTyped))
+	result := 1 - float32(t.NumberErrors)/float32(len(t.TextToType))
+	if result < 0 || result > 1 {
+		return 0
+	}
+	return result
 }
 
 // Computes the total test time in seconds as float32.
@@ -36,20 +39,20 @@ func (t *TypeTest) ComputeTypingSpeedPPM() float32 {
 	if duration == 0 {
 		return 0
 	}
-	return (float32(len(t.TextTyped)) / duration) * 60
+	charsTyped := len(t.TextTyped)
+	return (float32(charsTyped) / duration) * 60
 }
 
 // Computes the user's words per minute (WPM) counting words
 // as sequences separated by spaces.
-// Returns 0 i fthe duration is zero.
+// Returns 0 if the duration is zero.
 func (t *TypeTest) ComputeTypingSpeedWPM() float32 {
 	duration := t.ComputeTestTime()
-	if duration == 0 {
+	if duration <= 0 {
 		return 0
 	}
-	wordCount := len(strings.Fields(t.TextTyped))
-	if wordCount == 0 {
-		return 0
-	}
-	return (float32(wordCount) / duration) * 60
+	charsTyped := len([]rune(t.TextTyped))
+	// Assuming an average word length of 8 characters
+	wordsTyped := float32(charsTyped) / 5
+	return (wordsTyped / duration) * 60 * t.ComputeAccuracy()
 }
