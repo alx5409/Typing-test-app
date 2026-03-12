@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -99,34 +100,37 @@ func NormalizeText(text string) string {
 }
 
 // Generates a random sentence or paragraph for the typing test
-func GenerateRandomSentence() string {
+func GenerateRandomSentence() (string, error) {
 	numWords := config.AppConfig.NumWordsInSentence
-	// words := []string{}
-	resp, err := http.Get(config.AppConfig.ApiURL + "?words=" + fmt.Sprintf("%d", numWords))
-
+	completeURL := config.AppConfig.ApiURL + "?number=" + fmt.Sprintf("%d", numWords)
+	resp, err := http.Get(completeURL)
 	if err != nil {
-		return ""
+		log.Default().Printf("Error fetching sentence: %v", err)
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return ""
+		log.Default().Printf("Error reading response body: %v", err)
+		return "", err
 	}
-	var words []string
-	if err := json.Unmarshal(body, &words); err != nil {
-		return ""
+	var rawWords []string
+	err = json.Unmarshal(body, &rawWords)
+	if err != nil {
+		log.Default().Printf("Error parsing JSON response: %v", err)
+		return "", err
 	}
-	// Filter out words with spaces (just in case)
 	validWords := []string{}
-	for _, word := range words {
-		word = strings.TrimSpace(word)
+	for _, w := range rawWords {
+		word := strings.TrimSpace(w)
+		word = strings.Trim(word, "\"") // remove quotes
 		if word == "" || strings.Contains(word, " ") {
 			continue
 		}
 		validWords = append(validWords, word)
 	}
-	return strings.Join(validWords, " ")
+	return strings.Join(validWords, " "), nil
 }
 
 // Gets random words in a specified language (if API supports)
