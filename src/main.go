@@ -12,14 +12,21 @@ import (
 	utils "Typing-test-app/src/utils"
 )
 
-func fetchSentenceAsync() (string, error) {
+type fetchResult struct {
+	sentence string
+	err      error
+}
+
+func fetchSentenceAsync() chan fetchResult {
+	// Create a channel to receive the result of the fetch operation
+	ch := make(chan fetchResult, 1)
 	// Generate or fetch a random sentence
 	fmt.Println("Fetching sentence, please wait")
-	sentence, err := utils.GenerateRandomSentence()
-	if err != nil {
-		return "", err
-	}
-	return sentence, nil
+	go func() {
+		sentence, err := utils.GenerateRandomSentence()
+		ch <- fetchResult{sentence: sentence, err: err}
+	}()
+	return ch
 }
 
 func waitForStart(reader *bufio.Reader) error {
@@ -54,13 +61,14 @@ func buildTest(sentence, userInput string, start, end time.Time) *models.TypeTes
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Welcome to the Typing test App")
-	sentence, err := fetchSentenceAsync()
-	if err != nil {
-		fmt.Println("Error fetching sentence:", err)
+	resCh := fetchSentenceAsync()
+	result := <-resCh
+	if result.err != nil {
+		fmt.Println("Error fetching sentence:", result.err)
 		return
 	}
 	fmt.Println("Type the following sentence as fast and accurately as you can")
-	fmt.Println("\n>>>", sentence)
+	fmt.Println("\n>>>", result.sentence)
 
 	if err := waitForStart(reader); err != nil {
 		fmt.Println("Error waiting for start:", err)
@@ -73,7 +81,7 @@ func main() {
 		return
 	}
 	// Prepare the typingTestResult struct
-	typingTestResult := buildTest(sentence, userInput, start, end)
+	typingTestResult := buildTest(result.sentence, userInput, start, end)
 
 	// Print the results using the typing package
 	typing.ShowResults(typingTestResult)
