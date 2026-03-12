@@ -9,7 +9,7 @@ type Config struct {
 
 // AppConfig is the global configuration instance.
 var AppConfig = Config{
-	NumWordsInSentence: 8,
+	NumWordsInSentence: 30,
 	// ApiURL:             "https://random-word-api.vercel.app/api",
 	ApiURL: "https://random-word-api.herokuapp.com/word",
 	SupportedLanguages: map[string]string{

@@ -16,7 +16,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"time"
 )
 
 // Returns the maximum value
@@ -185,18 +184,53 @@ func GetCachedRandomText() string {
 	return cachedText
 }
 
-// Computes words per minuto given the sentence and elapsed time.
-// Words are cunted as sequences separated by spaces
-func CalculateWPM(sentence string, elapsed time.Duration) float64 {
-	sentence = strings.TrimSpace(sentence)
-	if sentence == "" {
-		return 0 // No words to count if the sentence is empty
+// iterative, rune-aware Levenshtein (DP) or edit distance implementation
+func Levenshtein(a, b string) int {
+	ar := []rune(a)
+	br := []rune(b)
+	if len(ar) == 0 {
+		return len(br)
 	}
-	words := strings.Fields(sentence) // separates the sentence by spaces in different strings
-	wordCount := len(words)           // counts how many strings there are
-	minutes := elapsed.Minutes()
-	if minutes == 0 {
-		return 0
+	if len(br) == 0 {
+		return len(ar)
 	}
-	return float64(wordCount) / minutes
+
+	prev := make([]int, len(br)+1)
+	cur := make([]int, len(br)+1)
+	for j := 0; j <= len(br); j++ {
+		prev[j] = j
+	}
+	for i := 1; i <= len(ar); i++ {
+		cur[0] = i
+		for j := 1; j <= len(br); j++ {
+			cost := 0
+			if ar[i-1] != br[j-1] {
+				cost = 1
+			}
+			ins := cur[j-1] + 1
+			del := prev[j] + 1
+			sub := prev[j-1] + cost
+			m := ins
+			if del < m {
+				m = del
+			}
+			if sub < m {
+				m = sub
+			}
+			cur[j] = m
+		}
+		copy(prev, cur)
+	}
+	return prev[len(br)]
+}
+
+// Calculates the similarity between two words based on their edit distance.
+func WordsMatchAmount(target, typed string) float32 {
+	t := strings.TrimSpace(target)
+	p := strings.TrimSpace(typed)
+	if t == p {
+		return 1.0
+	}
+	dist := Levenshtein(t, p)
+	return 1 - float32(dist)/float32(max(len([]rune(t)), len([]rune(p))))
 }
