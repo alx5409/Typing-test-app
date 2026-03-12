@@ -22,3 +22,5 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+# Json files
+*.json
