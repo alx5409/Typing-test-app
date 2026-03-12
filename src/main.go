@@ -12,48 +12,69 @@ import (
 	utils "Typing-test-app/src/utils"
 )
 
-func FetchSentenceAsync() (string, error) {
+func fetchSentenceAsync() (string, error) {
 	// Generate or fetch a random sentence
-	sentenceCh := make(chan string)
-	errCh := make(chan error)
-	go func() {
-		sentence, err := utils.GenerateRandomSentence()
-		sentenceCh <- sentence
-		errCh <- err
-	}()
-	fmt.Println("Fetching sentence, please wait...")
-	return <-sentenceCh, <-errCh
+	fmt.Println("Fetching sentence, please wait")
+	sentence, err := utils.GenerateRandomSentence()
+	if err != nil {
+		return "", err
+	}
+	return sentence, nil
+}
+
+func waitForStart(reader *bufio.Reader) error {
+	fmt.Println("\nPress enter when you are ready to start")
+	_, err := reader.ReadBytes('\n')
+	return err
+}
+
+func readTypedInput(reader *bufio.Reader) (string, time.Time, time.Time, error) {
+	fmt.Print("Your input: ")
+	start := time.Now()
+	userInput, err := reader.ReadString('\n')
+	if err != nil {
+		return "", time.Time{}, time.Time{}, err
+	}
+	end := time.Now()
+	return strings.TrimSpace(userInput), start, end, nil
+}
+
+func buildTest(sentence, userInput string, start, end time.Time) *models.TypeTest {
+	typingTestResult := &models.TypeTest{
+		TextToType:   sentence,
+		TextTyped:    userInput,
+		StartTime:    start,
+		EndTime:      end,
+		NumberErrors: utils.CountErrors(sentence, userInput),
+	}
+	typingTestResult.TypingSpeed = typingTestResult.ComputeTypingSpeedWPM()
+	return typingTestResult
 }
 
 func main() {
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Welcome to the Typing test App")
-	sentence, err := FetchSentenceAsync()
+	sentence, err := fetchSentenceAsync()
 	if err != nil {
 		fmt.Println("Error fetching sentence:", err)
 		return
 	}
 	fmt.Println("Type the following sentence as fast and accurately as you can")
 	fmt.Println("\n>>>", sentence)
-	fmt.Println("\nPress enter when you are ready to start")
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
 
-	start := time.Now()
-	fmt.Print("Your input: ")
-	reader := bufio.NewReader(os.Stdin)
-	userInput, _ := reader.ReadString('\n')
-	userInput = strings.TrimSpace(userInput)
-	elapsed := time.Since(start)
-
-	// Prepare the test struct
-	test := &models.TypeTest{
-		TextToType:   sentence,
-		TextTyped:    userInput,
-		StartTime:    start,
-		EndTime:      start.Add(elapsed),
-		NumberErrors: utils.CountErrors(sentence, userInput),
+	if err := waitForStart(reader); err != nil {
+		fmt.Println("Error waiting for start:", err)
+		return
 	}
-	test.TypingSpeed = test.ComputeTypingSpeedWPM()
+
+	userInput, start, end, err := readTypedInput(reader)
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		return
+	}
+	// Prepare the typingTestResult struct
+	typingTestResult := buildTest(sentence, userInput, start, end)
 
 	// Print the results using the typing package
-	typing.ShowResults(test)
+	typing.ShowResults(typingTestResult)
 }
