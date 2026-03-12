@@ -1,6 +1,8 @@
 package models
 
 import (
+	helper "Typing-test-app/src/utils"
+	"strings"
 	"time"
 )
 
@@ -39,7 +41,7 @@ func (t *TypeTest) ComputeTypingSpeedPPM() float32 {
 	if duration == 0 {
 		return 0
 	}
-	charsTyped := len(t.TextTyped)
+	charsTyped := len([]rune(t.TextTyped))
 	return (float32(charsTyped) / duration) * 60
 }
 
@@ -51,8 +53,17 @@ func (t *TypeTest) ComputeTypingSpeedWPM() float32 {
 	if duration <= 0 {
 		return 0
 	}
-	charsTyped := len([]rune(t.TextTyped))
-	// Assuming an average word length of 8 characters
-	wordsTyped := float32(charsTyped) / 5
-	return (wordsTyped / duration) * 60 * t.ComputeAccuracy()
+
+	targetWords := strings.Fields(t.TextToType)
+	typedWords := strings.Fields(t.TextTyped)
+
+	sumMatch := float32(0)
+	for i := 0; i < min(len(targetWords), len(typedWords)); i++ {
+		sumMatch += helper.WordsMatchAmount(targetWords[i], typedWords[i])
+	}
+	minutes := duration / 60
+	if minutes == 0 {
+		return 0
+	}
+	return (sumMatch / minutes)
 }

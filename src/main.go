@@ -54,7 +54,6 @@ func buildTest(sentence, userInput string, start, end time.Time) *models.TypeTes
 		EndTime:      end,
 		NumberErrors: utils.CountErrors(sentence, userInput),
 	}
-	typingTestResult.TypingSpeed = typingTestResult.ComputeTypingSpeedWPM()
 	return typingTestResult
 }
 
