@@ -1,6 +1,7 @@
 package typing
 
 import (
+	"Typing-test-app/src/config"
 	models "Typing-test-app/src/models"
 	utils "Typing-test-app/src/utils"
 	"fmt"
@@ -9,9 +10,9 @@ import (
 
 // StartTest initializes a new typing test, generates the text to type, and sets the start time.
 // It prints the text that the user should type and returns a pointer to the initialized TypeTest struct.
-func StartTest() *models.TypeTest {
+func StartTest(appConfig config.Config) *models.TypeTest {
 	test := &models.TypeTest{
-		TextToType: utils.GenerateRandomText(),
+		TextToType: utils.GenerateRandomText(appConfig),
 		StartTime:  time.Now(),
 	}
 	fmt.Println("Typing test started. Type the following text:")

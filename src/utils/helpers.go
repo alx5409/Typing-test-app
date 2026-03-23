@@ -27,8 +27,8 @@ func max(a, b int) int {
 }
 
 // Generates random text for the typing test
-func GenerateRandomText() string {
-	resp, err := http.Get(config.AppConfig.ApiURL)
+func GenerateRandomText(appConfig config.Config) string {
+	resp, err := http.Get(appConfig.ApiURL)
 	if err != nil {
 		return ""
 	}
@@ -99,9 +99,10 @@ func NormalizeText(text string) string {
 }
 
 // Generates a random sentence or paragraph for the typing test
-func GenerateRandomSentence() (string, error) {
-	numWords := config.AppConfig.NumWordsInSentence
-	completeURL := config.AppConfig.ApiURL + "?number=" + fmt.Sprintf("%d", numWords)
+func GenerateRandomSentence(appConfig config.Config) (string, error) {
+	numWords := appConfig.NumWordsInSentence
+	completeURL := appConfig.ApiURL + "?number=" + fmt.Sprintf("%d", numWords)
+	fmt.Println("The complete URL is: ", completeURL)
 	resp, err := http.Get(completeURL)
 	if err != nil {
 		log.Default().Printf("Error fetching sentence: %v", err)
@@ -134,8 +135,8 @@ func GenerateRandomSentence() (string, error) {
 
 // Gets random words in a specified language (if API supports)
 // Appends the language code as a query parameter (?lang=xx) to the API URL.
-func GetRandomTextWithLanguage(language string) string {
-	apiURL := config.AppConfig.ApiURL
+func GetRandomTextWithLanguage(appConfig config.Config, language string) string {
+	apiURL := appConfig.ApiURL
 	if language != "" {
 		sep := "?"
 		if strings.Contains(apiURL, "?") {
@@ -176,11 +177,15 @@ func GetRandomTextWithLanguage(language string) string {
 // This simple implementation uses a package-level variable as cache.
 var cachedText string
 
-func GetCachedRandomText() string {
+func GetCachedRandomText(appConfig config.Config) string {
 	if cachedText != "" {
 		return cachedText
 	}
-	cachedText = GenerateRandomText()
+	cachedText, err := GenerateRandomSentence(appConfig)
+	if err != nil {
+		log.Default().Printf("Error generating random sentence: %v", err)
+		return ""
+	}
 	return cachedText
 }
 
