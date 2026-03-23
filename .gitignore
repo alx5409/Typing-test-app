@@ -24,3 +24,5 @@ rad.json
 TestResults.xml
 # Json files
 *.json
+# Enviroment variables
+.env
