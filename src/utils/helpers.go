@@ -102,7 +102,6 @@ func NormalizeText(text string) string {
 func GenerateRandomSentence(appConfig config.Config) (string, error) {
 	numWords := appConfig.NumWordsInSentence
 	completeURL := appConfig.ApiURL + "?number=" + fmt.Sprintf("%d", numWords)
-	fmt.Println("The complete URL is: ", completeURL)
 	resp, err := http.Get(completeURL)
 	if err != nil {
 		log.Default().Printf("Error fetching sentence: %v", err)

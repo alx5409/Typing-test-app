@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -15,9 +16,15 @@ type Config struct {
 
 func Initialize() Config {
 	godotenv.Load()
+	numStr := os.Getenv("NUMBER_OF_WORDS_PER_SENTENCE")
+	numWords, err := strconv.Atoi(numStr)
+	defaultNumWords := 30
+	if err != nil {
+		numWords = defaultNumWords // default value if conversion fails
+	}
 	// AppConfig is the global configuration instance.
 	var AppConfig = Config{
-		NumWordsInSentence: 30,
+		NumWordsInSentence: numWords,
 		// ApiURL:             "https://random-word-api.vercel.app/api",
 		ApiURL: os.Getenv("API_URL"),
 		SupportedLanguages: map[string]string{
