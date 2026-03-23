@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	config "Typing-test-app/src/config"
 	typing "Typing-test-app/src/handlers"
 	models "Typing-test-app/src/models"
 	utils "Typing-test-app/src/utils"
@@ -17,13 +18,13 @@ type fetchResult struct {
 	err      error
 }
 
-func fetchSentenceAsync() chan fetchResult {
+func fetchSentenceAsync(appConfig config.Config) chan fetchResult {
 	// Create a channel to receive the result of the fetch operation
 	ch := make(chan fetchResult, 1)
 	// Generate or fetch a random sentence
 	fmt.Println("Fetching sentence, please wait")
 	go func() {
-		sentence, err := utils.GenerateRandomSentence()
+		sentence, err := utils.GenerateRandomSentence(appConfig)
 		ch <- fetchResult{sentence: sentence, err: err}
 	}()
 	return ch
@@ -60,7 +61,8 @@ func buildTest(sentence, userInput string, start, end time.Time) *models.TypeTes
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Welcome to the Typing test App")
-	resCh := fetchSentenceAsync()
+	appConfig := config.Initialize()
+	resCh := fetchSentenceAsync(appConfig)
 	result := <-resCh
 	if result.err != nil {
 		fmt.Println("Error fetching sentence:", result.err)
